@@ -2,6 +2,10 @@ import os
 import re
 import ast
 
+from lib.openai import get_description_for_function
+
+
+
 IGNORE_DIRNAMES =[
     '.git',
     'templates',
@@ -22,6 +26,11 @@ class Function:
     def name(self):
         match = re.search(r'def\s+(\w+)', self.code)
         return match.group(1) if match else None
+
+
+    def description(self):
+        return get_description_for_function(self)
+
 
 
 class FunctionExtractor(ast.NodeVisitor):
@@ -76,19 +85,8 @@ def analyze_repo(repo_path):
 if __name__ == "__main__":
     repo_path = "../sentient"
     functions = analyze_repo(repo_path)
-    print(functions)
-
-
-
-
-
-
-
-
-# def extract_function_names_from_file(file_path):
-#     """Extract function names from a given file."""
-#     function_pattern = re.compile(r'def (\w+)\(')
-#     with open(file_path, 'r', encoding='utf-8', errors='ignore') as file:
-#         content = file.read()
-#         return function_pattern.findall(content)
+    
+    for func in functions[0:3]:
+        print(func.name)
+        print(f"{func.description()}\n")
 
